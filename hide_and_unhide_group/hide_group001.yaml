@@ -1,6 +1,6 @@
 input_boolean:
-  hide_group:
-    name: "Hide and Unhide Group 001"
+  hide_group_001:
+    name: "Hide Group 001"
     initial: off
 
 automation:
@@ -9,10 +9,10 @@ automation:
     hide_entity: False
     trigger:
       platform: state
-      entity_id: input_boolean.hide_and_unhide_group_001
+      entity_id: input_boolean.hide_group_001
     action:
       service: script.group_visibility
       data:
         entity_id: [[[YOUR GROUP ENTITY]]]
-        cond: input_boolean.hide_and_unhide_group_001
+        cond: input_boolean.hide_group_001
         visible_state: 'off'
