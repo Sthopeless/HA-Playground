@@ -3,7 +3,7 @@ homeassistant:
     script.group_visibility:
       hidden: true
   customize_glob:
-    "automation.hideunhide_automation_":
+    "automation.hideunhide_automation_*":
       hidden: true
 
 script:
