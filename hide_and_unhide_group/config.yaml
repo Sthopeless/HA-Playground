@@ -20,4 +20,4 @@ group:
    view: false
    control: hidden
    entities:
-   - input_boolean.hide_and_unhide_group_001
+   - input_boolean.hide_group_001
