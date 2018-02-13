@@ -1,0 +1,23 @@
+homeassistant:
+  customize:
+    script.group_visibility:
+      hidden: true
+  customize_glob:
+    "automation.hideunhide_automation_":
+      hidden: true
+
+script:
+  group_visibility:
+    sequence:
+      - service: group.set_visibility
+        data_template:
+          entity_id: '{{ entity_id }}'
+          visible: '{{ is_state(cond, visible_state) }}'
+
+group:
+  hide_group:
+   name: "Hide/Unhide"
+   view: false
+   control: hidden
+   entities:
+   - input_boolean.hide_and_unhide_group_001
