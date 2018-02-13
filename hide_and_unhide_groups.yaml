@@ -1,0 +1,43 @@
+input_boolean:
+  hide_group:
+    name: "Hide Group"
+
+automation:
+  # [HIDE Automation]
+  - alias: "Hide Group"
+    initial_state: True
+    hide_entity: False
+    trigger:
+      platform: state
+      entity_id: input_boolean.hide_group
+      from: 'off'
+      to: 'on'
+    action:
+      service: group.set_visibility
+      entity_id: group.[GROUP NAME HERE]
+      data:
+        visible: False
+        
+  # [UNHIDE Automation]
+  - alias: "Unhide Group"
+    initial_state: True
+    hide_entity: False
+    trigger:
+      platform: state
+      entity_id: input_boolean.hide_group
+      from: 'on'
+      to: 'off'
+    action:
+      service: group.set_visibility
+      entity_id: group.[GROUP NAME HERE]
+      data:
+        visible: True
+
+group:
+  hide_group:
+   view: false
+   control: hidden
+   entities:
+   - input_boolean.hide_group
+   - automation.hide_group
+   - automation.unhide_group
