@@ -1,43 +1,42 @@
+homeassistant:
+  customize:
+    script.group_visibility:
+      hidden: true
+    automation.hide_and_unhide:
+      hidden: true
+
 input_boolean:
   hide_group:
     name: "Hide Group"
+    initial: off
 
 automation:
-  # [HIDE Automation]
-  - alias: "Hide Group"
+  - alias: "Hide and Unhide"
     initial_state: True
     hide_entity: False
     trigger:
       platform: state
       entity_id: input_boolean.hide_group
-      from: 'off'
-      to: 'on'
     action:
-      service: group.set_visibility
-      entity_id: group.[GROUP NAME HERE]
+      service: script.group_visibility
       data:
-        visible: False
-        
-  # [UNHIDE Automation]
-  - alias: "Unhide Group"
-    initial_state: True
-    hide_entity: False
-    trigger:
-      platform: state
-      entity_id: input_boolean.hide_group
-      from: 'on'
-      to: 'off'
-    action:
-      service: group.set_visibility
-      entity_id: group.[GROUP NAME HERE]
-      data:
-        visible: True
+        entity_id: group. ##GROUP NAME HERE
+        cond: input_boolean.hide_group
+        visible_state: 'off'
+
+script:
+  group_visibility:
+    sequence:
+      - service: group.set_visibility
+        data_template:
+          entity_id: '{{ entity_id }}'
+          visible: '{{ is_state(cond, visible_state) }}'
 
 group:
-  hide_group:
+  hide_group_group:
    view: false
    control: hidden
    entities:
    - input_boolean.hide_group
-   - automation.hide_group
-   - automation.unhide_group
+   - automation.hide_and_unhide
+   - script.group_visibility
