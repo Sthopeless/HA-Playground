@@ -1,3 +1,20 @@
+homeassistant:
+  customize:
+    script.switch_timer_script01:
+      hidden: true
+    input_boolean.switch_timer_boolean:
+      icon: mdi:timer-sand
+    input_select.switch_timer_entities:
+      icon: mdi:home-assistant
+    input_text.switch_timer_text:
+      icon: mdi:home-assistant
+    input_number.switch_timer_hours:
+      icon: mdi:timer
+    input_number.switch_timer_minutes:
+      icon: mdi:timer
+    input_number.switch_timer_seconds:
+      icon: mdi:timer
+
 group:
   switch_timer_group:
     name: "Entity's Timer"
@@ -11,6 +28,8 @@ group:
       - input_number.switch_timer_hours
       - input_number.switch_timer_minutes
       - input_number.switch_timer_seconds
+      - automation.reset_choosen_entity
+      - automation.reset_choosen_action
       - automation.switch_timer_auto02
       - automation.stop_timer_if_turned_off
       - script.switch_timer_script01
@@ -32,29 +51,29 @@ input_number:
 
   switch_timer_seconds:
     name: Timer Seconds
-    initial: 60
+    initial: 30
     min: 0
     max: 60
     step: 5
 
 input_text:
   switch_timer_text:
-    name: "Write entity_id"
+    name: "Type:"
     initial: "(entity_id)"
 
 input_select:
   switch_timer_entities:
     name: "Choose entity:"
-    initial: "Kettle"
+    initial: "--Select Entity--"
     options:
      - "--Select Entity--"
      - Kettle
-     - Light
+     - Table
      - TV
      - "Input Text"
 
   switch_timer_actions:
-    name: Entities IDs
+    name: Action
     initial: "Off"
     options:
      - "--Select Action--"
@@ -71,7 +90,6 @@ script:
   switch_timer_script01:
     sequence:
       - delay: '{{ states.input_number.switch_timer_hours.state | int }}:{{ states.input_number.switch_timer_minutes.state | int }}:{{ states.input_number.switch_timer_seconds.state | int }}'
-
       - service_template: >
           {% if is_state("input_select.switch_timer_actions", "On") %} homeassistant.turn_on
           {% elif is_state("input_select.switch_timer_actions", "Off") %} homeassistant.turn_off
@@ -79,19 +97,19 @@ script:
           {% endif %}
         data_template:
           entity_id: >
-            {% if is_state("input_select.switch_timer_entities", "Kettle") %} switch.kettle
-            {% elif is_state("input_select.switch_timer_entities", "Light") %} light.light
-            {% elif is_state("input_select.switch_timer_entities", "TV") %} switch.TV
+            {% if is_state("input_select.switch_timer_entities", "Kettle") %} switch.plug_158d000153dd6a
+            {% elif is_state("input_select.switch_timer_entities", "Table") %} light.table
+            {% elif is_state("input_select.switch_timer_entities", "TV") %} media_player.tv
             {% elif is_state("input_select.switch_timer_entities", "Input Text") %} {{ states.input_text.switch_timer_text.state }}
             {% endif %}
-
       - service: homeassistant.turn_off
         entity_id: input_boolean.switch_timer_boolean
 
 automation:
+
   - alias: "switch_timer_auto02"
     initial_state: True
-    hide_entity: False
+    hide_entity: true
     trigger:
       - platform: state
         entity_id: input_boolean.switch_timer_boolean
@@ -107,7 +125,7 @@ automation:
 
   - alias: "Stop Timer if turned Off"
     initial_state: True
-    hide_entity: False
+    hide_entity: true
     trigger:
       - platform: state
         entity_id: input_boolean.switch_timer_boolean
@@ -116,7 +134,7 @@ automation:
     action:
       - service: homeassistant.turn_off
         entity_id: script.switch_timer_script01
-        
+
   - alias: "Reset choosen entity"
     initial_state: True
     hide_entity: False
@@ -130,7 +148,7 @@ automation:
         data:
           entity_id: input_select.switch_timer_entities
           option: "--Select Entity--"
-          
+
   - alias: "Reset choosen action"
     initial_state: false
     hide_entity: False
