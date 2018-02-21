@@ -30,9 +30,6 @@ group:
       - input_number.switch_timer_seconds
       - automation.reset_choosen_entity
       - automation.reset_choosen_action
-      - automation.switch_timer_auto02
-      - automation.stop_timer_if_turned_off
-      - script.switch_timer_script01
 
 input_number:
   switch_timer_minutes:
@@ -41,14 +38,12 @@ input_number:
     min: 0
     max: 10
     step: 1
-
   switch_timer_hours:
     name: Timer Hours
     initial: 0
     min: 0
     max: 24
     step: 1
-
   switch_timer_seconds:
     name: Timer Seconds
     initial: 30
@@ -68,10 +63,9 @@ input_select:
     options:
      - "--Select Entity--"
      - Kettle
-     - Table
+     - Light
      - TV
      - "Input Text"
-
   switch_timer_actions:
     name: Action
     initial: "Off"
@@ -97,8 +91,8 @@ script:
           {% endif %}
         data_template:
           entity_id: >
-            {% if is_state("input_select.switch_timer_entities", "Kettle") %} switch.plug_158d000153dd6a
-            {% elif is_state("input_select.switch_timer_entities", "Table") %} light.table
+            {% if is_state("input_select.switch_timer_entities", "Kettle") %} switch.kettle
+            {% elif is_state("input_select.switch_timer_entities", "Light") %} light.light
             {% elif is_state("input_select.switch_timer_entities", "TV") %} media_player.tv
             {% elif is_state("input_select.switch_timer_entities", "Input Text") %} {{ states.input_text.switch_timer_text.state }}
             {% endif %}
@@ -106,7 +100,6 @@ script:
         entity_id: input_boolean.switch_timer_boolean
 
 automation:
-
   - alias: "switch_timer_auto02"
     initial_state: True
     hide_entity: true
@@ -134,7 +127,6 @@ automation:
     action:
       - service: homeassistant.turn_off
         entity_id: script.switch_timer_script01
-
   - alias: "Reset choosen entity"
     initial_state: True
     hide_entity: False
@@ -148,7 +140,6 @@ automation:
         data:
           entity_id: input_select.switch_timer_entities
           option: "--Select Entity--"
-
   - alias: "Reset choosen action"
     initial_state: false
     hide_entity: False
