@@ -1,0 +1,93 @@
+input_number:
+  switch_timer_minutes:
+    name: Timer Minutes
+    initial: 1
+    min: 0
+    max: 10
+    step: 1
+
+  switch_timer_hours:
+    name: Timer Hours
+    initial: 0
+    min: 0
+    max: 24
+    step: 1
+
+  switch_timer_seconds:
+    name: Timer Seconds
+    initial: 0
+    min: 0
+    max: 60
+    step: 1
+
+input_text:
+  switch_timer_text:
+    name: "Entity ID"
+    initial: "Enter 'entity_id'"
+
+input_select:
+  switch_timer_entities:
+    name: Entities IDs
+    initial: "--Select Entity--"
+    options:
+     - "--Select Entity--"
+     - Kettle
+     - Table
+     - TV
+     - "Input Text"
+
+  switch_timer_actions:
+    name: Entities IDs
+    initial: "--Select Action--"
+    options:
+     - "--Select Action--"
+     - "On"
+     - "Off"
+     - "Toggle"
+
+input_boolean:
+  switch_timer_boolean:
+    name: Switch_Off_Timer
+    initial: off
+    
+automation:
+  - alias: "switch_timer_auto02"
+    initial_state: True
+    hide_entity: False 
+    trigger:
+      - platform: state
+        entity_id: input_boolean.switch_timer_boolean
+        from: 'off'
+        to: 'on'
+    action:
+      - delay: '{{ states.input_number.switch_timer_hours.state | int }}:{{ states.input_number.switch_timer_minutes.state | int }}:{{ states.input_number.switch_timer_seconds.state | int }}'
+      - service: homeassistant.turn_off
+        entity_id: input_boolean.switch_timer_boolean
+      - service_template: >
+          {% if is_state("input_select.switch_timer_actions", "On") %} homeassistant.turn_on
+          {% elif is_state("input_select.switch_timer_actions", "Off") %} homeassistant.turn_off
+          {% elif is_state("input_select.switch_timer_actions", "Toggle") %} homeassistant.toggle
+          {% endif %}
+        data_template:
+          entity_id: >
+            {% if is_state("input_select.switch_timer_entities", "Kettle") %} switch.kettle
+            {% elif is_state("input_select.switch_timer_entities", "Table") %} light.table
+            {% elif is_state("input_select.switch_timer_entities", "TV") %} media_player.tv
+            {% elif is_state("input_select.switch_timer_entities", "Input Text") %} {{ states.input_text.switch_timer_text.state }}
+            {% endif %}
+            
+group:
+  switch_timer_group:
+   control: hidden
+   entities:
+   - input_boolean.switch_timer_boolean
+   - input_select.switch_timer_entities
+   - input_text.switch_timer_text
+   - input_select.switch_timer_actions
+   - input_number.switch_timer_hours
+   - input_number.switch_timer_minutes
+   - input_number.switch_timer_seconds
+   - script.switch_timer_script01
+   - automation.switch_timer_auto02
+   name: 'Switch_off_timer'
+   view: false
