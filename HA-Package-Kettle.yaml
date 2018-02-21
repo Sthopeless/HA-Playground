@@ -1,0 +1,149 @@
+homeassistant:
+  customize_glob:
+    "script.kettle_timer_set_*":
+      hidden: true
+  
+script:
+#####################################################################
+#####################################################################
+#####################################################################
+  kettle_timer_set_min_500ml:
+    sequence:
+## Which Entity
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.kettle_timer
+          option: "Kettle"
+## What Action
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.switch_timer_actions
+          option: "Off"
+## How many Seconds
+      - service: input_number.set_value
+        data_template:
+          entity_id: input_number.switch_timer_seconds
+          value: "{{ 60 }}"
+## How many Minutes
+      - service: input_number.set_value
+        data_template:
+          entity_id: input_number.switch_timer_minutes
+          value: "{{ 0 }}"
+
+## How many Hours
+      - service: input_number.set_value 
+        data_template:
+          entity_id: input_number.switch_timer_hours
+          value: "{{ 0 }}"
+
+## Start Timer
+      - service: homeassistant.turn_on
+        entity_id: input_boolean.switch_timer_boolean
+#####################################################################
+#####################################################################
+#####################################################################
+  kettle_timer_set_med_1l:
+    sequence:
+## Which Entity
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.kettler_timer
+          option: "Kettle"
+## What Action
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.switch_timer_actions
+          option: "Off"
+## How many Seconds
+      - service: input_number.set_value
+        data_template:
+          entity_id: input_number.switch_timer_seconds
+          value: "{{ 30 }}"
+## How many Minutes
+      - service: input_number.set_value
+        data_template:
+          entity_id: input_number.switch_timer_minutes
+          value: "{{ 1 }}"
+
+## How many Hours
+      - service: input_number.set_value 
+        data_template:
+          entity_id: input_number.switch_timer_hours
+          value: "{{ 0 }}"
+## Start Timer
+      - service: homeassistant.turn_on
+        entity_id: input_boolean.switch_timer_boolean
+#####################################################################
+#####################################################################
+#####################################################################
+  kettle_timer_set_max_1_5l:
+    sequence:
+## Which Entity
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.kettler_timer
+          option: "Kettle"
+## What Action
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.switch_timer_actions
+          option: "Off"
+## How many Seconds
+      - service: input_number.set_value
+        data_template:
+          entity_id: input_number.switch_timer_seconds
+          value: "{{ 20 }}"
+## How many Minutes
+      - service: input_number.set_value
+        data_template:
+          entity_id: input_number.switch_timer_minutes
+          value: "{{ 2 }}"
+
+## How many Hours
+      - service: input_number.set_value 
+        data_template:
+          entity_id: input_number.switch_timer_hours
+          value: "{{ 0 }}"
+## Start Timer
+      - service: homeassistant.turn_on
+        entity_id: input_boolean.switch_timer_boolean
+#####################################################################
+#####################################################################
+#####################################################################
+input_select:
+  kettle_timer:
+    name: Kettle Timer
+    initial: MIN
+    options:
+     - MAX
+     - MED
+     - MIN
+     
+#####################################################################
+#####################################################################
+#####################################################################
+input_boolean:
+  kettle_with_timer:
+    name: "Kettle with Timer"
+    initial: off
+    icon: mdi:kettle
+#####################################################################
+#####################################################################
+#####################################################################
+automation:
+  - alias: "KETTLE Timer Select"
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: input_boolean.kettle_with_timer
+        from: 'off'
+        to: 'on'
+    action:
+      - service: homeassistant.turn_on
+        data_template:
+          entity_id: >
+            {% if is_state("input_select.kettle_timer", "MAX") %} script.kettle_timer_set_max_1_5l
+            {% elif is_state("input_select.kettle_timer", "MED") %} script.kettle_timer_set_med_1l
+            {% elif is_state("input_select.kettle_timer", "MIN") %} script.kettle_timer_set_min_500ml
+            {% endif %}
