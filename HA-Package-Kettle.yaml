@@ -147,3 +147,9 @@ automation:
             {% elif is_state("input_select.kettle_timer", "MED") %} script.kettle_timer_set_med_1l
             {% elif is_state("input_select.kettle_timer", "MIN") %} script.kettle_timer_set_min_500ml
             {% endif %}
+
+# Add script for Alexa Google Assistant 
+#(..., turn on Kettle Minimum) 
+#(..., turn on Kettle Medium) 
+#(..., turn on Kettle Maximum)
+#script running input_select.kettle_timer and input_boolean.kettle_with_timer
