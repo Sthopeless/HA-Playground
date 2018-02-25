@@ -1,0 +1,5 @@
+## Hardware
+
+1. Dallas DS18b20 (temperature)
+2. AM312 (PIR)
+3. (good sensor for cigarrette smoke)
