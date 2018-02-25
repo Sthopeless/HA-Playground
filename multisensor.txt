@@ -1,5 +1,22 @@
-## Hardware
+## Temperature
 
-1. Dallas DS18b20 (temperature)
-2. AM312 (PIR)
-3. (good sensor for cigarrette smoke)
+1. DS18B20
+2. DHT22
+3. DHT11
+4. BMP 180
+5. BME 180
+5. BMP 280
+6. BME 280
+
+## PIR - Motion Sensor
+1. HC-SR505
+2. AM312
+3. RCWL-0516 (microwave)
+
+## Smoke Sensor (?best for cigar's smoke?)
+
+1. MQ-2
+2. MQ-135
+
+
+## RAIN SENSOR & Waterproof Temperature, Waterproof ESP8266 box
