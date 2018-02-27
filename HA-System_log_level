@@ -1,0 +1,38 @@
+############################################
+#################[PACKAGE]##################
+############################################
+
+input_select:
+  system_log_level:
+    name: System Log Level
+    initial: critical
+    options:
+      - critical
+      - fatal
+      - error
+      - warning
+      - warn
+      - info
+      - debug
+      - notset
+
+automation:
+  - alias: System Log Level
+    initial_state: True
+    hide_entity: True # True= HideAutomation | False=UnhideAutomation
+    trigger:
+      - platform: state
+        entity_id: input_select.log_level
+    action:
+      - service: logger.set_level
+        data_template:
+          homeassistant.components: "{{ trigger.to_state.state }}"
+
+group:
+  system_log_level:
+    name: System Log Level
+    control: hidden
+    view: no
+    entities:
+      - input_select.system_log_level
+      - automation.system_log_level
