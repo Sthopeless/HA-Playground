@@ -4,7 +4,131 @@
 ##          add notify and joaoapps_join components            ####
 ###################################################################
 
+homeassistant:
+  customize:
+    script.join_mega_script:
+      icon: mdi:email
+  customize_glob:
+    "script.join_script_*":
+      hidden: true
+
 notify:
   - platform: joaoapps_join
+    name: Join
+    api_key: 
+    device_id: 
+    device_names: Sthopeless
 
 joaoapps_join:
+  - name: sthope
+    device_id: 
+    api_key: 
+
+input_select:
+  join_services:
+    name: Join Services
+    options:
+     - Ring
+     - Send File
+     - Send SMS
+     - Send Tasker
+     - Send URL
+     - Set Wallpaper
+     - Enter One
+    initial: Enter One
+  contact_list:
+    name: Contact List
+    options:
+     - Contact 1
+     - Contact 2
+     - Contact 3
+     - Contact 4
+     - Contact 5
+     - "--choose one--"
+    initial: "--choose one--"
+
+input_text:
+  msg_text:
+    name: "SMS:"
+    initial: Enter SMS
+    max: 60
+  phone_number:
+    name: "Number:"
+    initial: 0031612345678
+    max: 13
+  join_url:
+    name: "URL:"
+    initial: URL address
+  join_cmd:
+    name: "Command:"
+    initial: Tasker Command
+
+script:
+  join_script_ring:
+    alias: "Script Join Ring"
+    sequence:
+      - service: joaoapps_join.sthope_ring
+  join_script_send_file:
+    alias: "Script Join Send File"
+    sequence:
+      - service: joaoapps_join.sthope_send_file
+        data_template:
+          url: '{{ states("input_text.join_url") }}'
+  join_script_send_sms:
+    alias: "Script Join Send SMS"
+    sequence:
+      - service: joaoapps_join.sthope_send_sms
+        data_template:
+          message: '{{ states("input_text.msg_text") }}'
+          number: >
+            {% if is_state("input_select.contact_list", "Contact 1") %} PHONE_NUMBER
+            {% elif is_state("input_select.contact_list", "Contact 2") %} PHONE_NUMBER
+            {% elif is_state("input_select.contact_list", "Contact 3") %} PHONE_NUMBER
+            {% elif is_state("input_select.contact_list", "Contact 4") %} PHONE_NUMBER
+            {% elif is_state("input_select.contact_list", "Contact 5") %} PHONE_NUMBER
+            {% elif is_state("input_select.contact_list", "--choose one--") %} {{ states("input_text.phone_number") }}
+            {% endif %}
+  join_script_send_tasker:
+    alias: "Script Join Send Tasker"
+    sequence:
+      - service: joaoapps_join.sthope_send_tasker
+        data_template:
+          command: '{{ states("input_text.join_cmd") }}'
+  join_script_send_url:
+    alias: "Script Join Send URL"
+    sequence:
+      - service: joaoapps_join.sthope_send_url
+        data_template:
+          url: '{{ states("input_text.join_url") }}'
+  join_script_set_wallpaper:
+    alias: "Script Join Send URL"
+    sequence:
+      - service: joaoapps_join.sthope_set_wallpaper
+        data_template:
+          url: '{{ states("input_text.join_url") }}'
+  join_mega_script:
+    alias: "Join Mega Script"
+    sequence:
+      - service: homeassistant.turn_on 
+        data_template:
+          entity_id: >
+           {% if is_state("input_select.join_services", "Ring") %} script.join_script_ring
+           {% elif is_state("input_select.join_services", "Send File") %} script.join_script_send_file
+           {% elif is_state("input_select.join_services", "Send SMS") %} script.join_script_send_sms
+           {% elif is_state("input_select.join_services", "Send Tasker") %} script.join_script_send_tasker
+           {% elif is_state("input_select.join_services", "Send URL") %} script.join_script_send_url
+           {% elif is_state("input_select.join_services", "Set Wallpaper") %} script.join_script_set_wallpaper
+           {% endif %}
+
+group:
+  join_joaoapps:
+    name: "Join"
+    view: no
+    entities:
+      - input_select.contact_list
+      - input_text.phone_number
+      - input_text.msg_text
+      - input_text.join_url
+      - input_text.join_cmd
+      - input_select.join_services
+      - script.join_mega_script
