@@ -1,5 +1,10 @@
 ###################################################################
 ##                                                             ####
 ##     https://home-assistant.io/components/joaoapps_join/     ####
-##                                                             ####
+##          add notify and joaoapps_join components            ####
 ###################################################################
+
+notify:
+  - platform: joaoapps_join
+
+joaoapps_join:
