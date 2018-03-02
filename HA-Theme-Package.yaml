@@ -1,0 +1,52 @@
+input_select:
+  choose_theme:
+    name: 'Choose Theme'
+    options:
+     - 'default'
+     - 'DarkBlue'
+     - 'DarkOrange'
+     - 'DarkRed'
+     - 'DarkTheme'
+     - 'Done1'
+     - 'Minimal'
+     - 'PmxMonolight'
+     - 'PmxMononight'
+     - 'StormyHues'
+     - 'Vintage'
+     - 'Wood'
+    icon: 'mdi:palette'
+    initial: 'DarkOrange'
+
+automation:
+  - alias: Theme Keeping! *after reboot
+    initial_state: True
+    hide_entity: True
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      - service: frontend.set_theme
+        data_template:
+          name: "{{ states.input_select.hass_template.state }}"
+  - alias: Theme switch
+    initial_state: True
+    hide_entity: True
+    trigger:
+      - platform: state
+        entity_id: input_select.choose_theme
+      - platform: homeassistant
+        event: start
+    action:
+      - service: frontend.set_theme
+        data_template:
+          name: "{{ states.input_select.choose_theme.state }}"
+
+group:
+  themes:
+    control: hidden
+    entities:
+    - input_select.choose_theme
+    - automation.theme_switch
+    - automation.theme_keeping_after_reboot
+    name: Themes
+    view: false
