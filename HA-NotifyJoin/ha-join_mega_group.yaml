@@ -2,22 +2,48 @@
 ##                                                             ####
 ##     https://home-assistant.io/components/joaoapps_join/     ####
 ##          add notify and joaoapps_join components            ####
+##             Change "Contact #" to your desire               ####
 ###################################################################
 
 homeassistant:
   customize:
     script.join_mega_script:
       icon: mdi:email
+    input_text.msg_text:
+      icon: mdi:comment-text-outline
+    input_text.phone_number:
+      icon: mdi:phone-classic
+    input_text.join_url:
+      icon: mdi:web
+    input_text.join_cmd:
+      icon: mdi:console
+    input_select.contact_list:
+      icon: mdi:account-group
+    input_select.join_services:
+      icon: mdi:sitemap
   customize_glob:
     "script.join_script_*":
       hidden: true
 
+group:
+  join_joaoapps:
+    name: "Join"
+    control: hidden
+    view: no
+    entities:
+      - input_select.contact_list
+      - input_text.phone_number
+      - input_text.msg_text
+      - input_text.join_url
+      - input_text.join_cmd
+      - input_select.join_services
+      - script.join_mega_script
 notify:
   - platform: joaoapps_join
     name: Join
     api_key: 
     device_id: 
-    device_names: Sthopeless
+    device_names: 
 
 joaoapps_join:
   - name: sthope
@@ -28,37 +54,39 @@ input_select:
   join_services:
     name: Join Services
     options:
-     - Ring
-     - Send File
      - Send SMS
-     - Send Tasker
+     - Send File
      - Send URL
+     - Send Tasker
+     - Ring
      - Set Wallpaper
-     - Enter One
-    initial: Enter One
+    initial: Send SMS
+
   contact_list:
-    name: Contact List
+    name: Contacts
     options:
      - Contact 1
      - Contact 2
      - Contact 3
      - Contact 4
      - Contact 5
-     - "--choose one--"
-    initial: "--choose one--"
+     - "."        ## with this option we can set the phone number in the Number input_text
+    initial: "."
 
 input_text:
   msg_text:
     name: "SMS:"
-    initial: Enter SMS
-    max: 60
+    initial: ""
+
   phone_number:
     name: "Number:"
-    initial: 0031612345678
     max: 13
+    initial: ""
+
   join_url:
     name: "URL:"
     initial: URL address
+
   join_cmd:
     name: "Command:"
     initial: Tasker Command
@@ -68,12 +96,19 @@ script:
     alias: "Script Join Ring"
     sequence:
       - service: joaoapps_join.sthope_ring
+      
   join_script_send_file:
     alias: "Script Join Send File"
     sequence:
       - service: joaoapps_join.sthope_send_file
         data_template:
           url: '{{ states("input_text.join_url") }}'
+      - delay: 00:00:01
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.join_url
+          value: URL address
+          
   join_script_send_sms:
     alias: "Script Join Send SMS"
     sequence:
@@ -81,33 +116,61 @@ script:
         data_template:
           message: '{{ states("input_text.msg_text") }}'
           number: >
-            {% if is_state("input_select.contact_list", "Contact 1") %} PHONE_NUMBER
-            {% elif is_state("input_select.contact_list", "Contact 2") %} PHONE_NUMBER
-            {% elif is_state("input_select.contact_list", "Contact 3") %} PHONE_NUMBER
-            {% elif is_state("input_select.contact_list", "Contact 4") %} PHONE_NUMBER
-            {% elif is_state("input_select.contact_list", "Contact 5") %} PHONE_NUMBER
-            {% elif is_state("input_select.contact_list", "--choose one--") %} {{ states("input_text.phone_number") }}
+            {% if is_state("input_select.contact_list", "Contact 1") %} 
+            {% elif is_state("input_select.contact_list", "Contact 2") %} 
+            {% elif is_state("input_select.contact_list", "Contact 3") %} 
+            {% elif is_state("input_select.contact_list", "Contact 4") %} 
+            {% elif is_state("input_select.contact_list", "Contact 5") %} 
+            {% elif is_state("input_select.contact_list", ".") %} {{ states("input_text.phone_number") }}
             {% endif %}
+      - delay: 00:00:05
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.msg_text
+          value: ""
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.phone_number
+          value: ""
+          
   join_script_send_tasker:
     alias: "Script Join Send Tasker"
     sequence:
       - service: joaoapps_join.sthope_send_tasker
         data_template:
           command: '{{ states("input_text.join_cmd") }}'
+      - delay: 00:00:01
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.join_cmd
+          value: Tasker Command
+          
   join_script_send_url:
     alias: "Script Join Send URL"
     sequence:
       - service: joaoapps_join.sthope_send_url
         data_template:
           url: '{{ states("input_text.join_url") }}'
+      - delay: 00:00:01
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.join_url
+          value: URL address
+          
   join_script_set_wallpaper:
     alias: "Script Join Send URL"
     sequence:
       - service: joaoapps_join.sthope_set_wallpaper
         data_template:
           url: '{{ states("input_text.join_url") }}'
+      - delay: 00:00:01
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.join_url
+          value: URL address
+          
   join_mega_script:
-    alias: "Join Mega Script"
+    alias: "Send"
     sequence:
       - service: homeassistant.turn_on 
         data_template:
@@ -119,16 +182,3 @@ script:
            {% elif is_state("input_select.join_services", "Send URL") %} script.join_script_send_url
            {% elif is_state("input_select.join_services", "Set Wallpaper") %} script.join_script_set_wallpaper
            {% endif %}
-
-group:
-  join_joaoapps:
-    name: "Join"
-    view: no
-    entities:
-      - input_select.contact_list
-      - input_text.phone_number
-      - input_text.msg_text
-      - input_text.join_url
-      - input_text.join_cmd
-      - input_select.join_services
-      - script.join_mega_script
