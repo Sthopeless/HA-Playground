@@ -1,0 +1,56 @@
+group:
+  mqtt_client_broker:
+    name: "MQTT Client"
+    control: hidden
+    view: no
+    entities:
+      - input_text.mqtt_client_broker_02
+      - input_text.mqtt_client_broker_01
+      - script.mqtt_send_msg
+      - input_boolean.mqtt_client_broker_01
+      - input_boolean.mqtt_client_broker_send
+      - automation.mqtt_client_broker_01
+      - automation.mqtt_broker_listen
+
+input_text:
+  mqtt_client_broker_01:
+    name: "Payload:"
+  mqtt_client_broker_02:
+    name: "Topic:"
+
+input_boolean:
+  mqtt_client_broker_01:
+    name: "Start Listenning"
+    initial: off
+
+automation:
+  - alias: "MQTT Broker Listen"
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: "#"
+    condition:
+      - condition: state
+        entity_id: input_boolean.mqtt_client_broker_01
+        state: 'on'
+    action:
+      - service: input_text.set_value
+        data_template:
+         entity_id: input_text.mqtt_client_broker_01
+         value: '{{ trigger.payload }}'
+      - service: input_text.set_value
+        data_template:
+         entity_id: input_text.mqtt_client_broker_02
+         value: "{{ trigger.topic }}"
+
+script:
+  mqtt_send_msg:
+    alias: "MQTT Send msg"
+    sequence:
+      - service: mqtt.publish
+        data_template:
+          topic: '{{ states("input_text.mqtt_client_broker_02") }}'
+          payload: '{{ states("input_text.mqtt_client_broker_01") }}'
+      - service: homeassistant.turn_off
+        entity_id: input_boolean.mqtt_client_broker_send
