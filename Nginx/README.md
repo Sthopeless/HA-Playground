@@ -1,4 +1,4 @@
-# Nging
+# NGINX
 
 ```
 
