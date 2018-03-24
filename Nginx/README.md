@@ -2,20 +2,20 @@
 
 ```
 
-                          +--- >> localhost:8000 >> -------- >> https://awesome.domain.com
+                          +--- >> localhost:8000 >> -------- >> https://awesome.com
                           |
-                          +--- >> localhost:8001 >> -------- >> https://awesome.domain.com/a
+                          +--- >> localhost:8001 >> -------- >> https://awesome.com/a
                           |
-                          +--- >> localhost:8002 >> -------- >> https://awesome.domain.com/b
+                          +--- >> localhost:8002 >> -------- >> https://awesome.com/b
                           |
-                          +--- >> localhost:8003 >> -------- >> https://awesome.domain.com/c
+                          +--- >> localhost:8003 >> -------- >> https://awesome.com/c
                           |
-[Server] -->> [Nginx] -->>|--- >> localhost:8004 >> -------- >> https://awesome.domain.com/d
+[Server] -->> [Nginx] -->>|--- >> localhost:8004 >> -------- >> https://awesome.com/d
                           |
-                          +--- >> localhost:8005 >> -------- >> https://awesome.domain.com/e
+                          +--- >> localhost:8005 >> -------- >> https://awesome.com/e
                           |
-                          +--- >> localhost:8006 >> -------- >> https://awesome.domain.com/f
+                          +--- >> localhost:8006 >> -------- >> https://awesome.com/f
                           |
-                          +--- >> localhost:8007 >> -------- >> https://awesome.domain.com/g
+                          +--- >> localhost:8007 >> -------- >> https://awesome.com/g
 
 ```
