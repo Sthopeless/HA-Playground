@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name localhost awesome.domain.com;
+    server_name localhost domain.com;
 
     location / {
     rewrite ^(.*)$  https://$host$1 permanent;
@@ -9,7 +9,7 @@ server {
 }
 
 server {
-    server_name localhost awesome.domain.com;
+    server_name localhost domain.com;
 
     # Ensure this line points to your dhparams file
     ssl_dhparam /etc/ssl/certs/dhparam.pem;
@@ -21,8 +21,8 @@ server {
     ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
     ssl_prefer_server_ciphers on;
     ssl_session_cache shared:SSL:10m;
-    ssl_certificate /etc/letsencrypt/live/awesome.domain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/awesome.domain.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/domain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/domain.com/privkey.pem;
 	
     proxy_buffering off;
 
