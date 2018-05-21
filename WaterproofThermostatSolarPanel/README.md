@@ -1,4 +1,4 @@
-# Thermostat with battery and Solar Panel
+# Waterproof Thermostat 
   
 Hardware                       |  
 :----------------------------: | 
@@ -11,3 +11,8 @@ TP4056 [w/ Protection]         |
 Junction Box Waterproof        |
 Dunpon Wires                   |
 Hot Glue                       |
+  
+  
+A waterproof Thermostat to use outside with battery and solar panel for self-recharging.
+  
+  
