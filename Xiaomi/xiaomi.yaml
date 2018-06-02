@@ -1,0 +1,117 @@
+# Replace {{GW_MAC}} with your Xiaomi Gateway MAC 
+
+homeassistant:
+  customize:
+    script.xiaomi_play_ringtone:
+      friendly_name: Play Ringtone
+      icon: mdi:play-circle
+    script.xiaomi_stop_ringtone:
+      friendly_name: Stop Ringtone
+      icon: mdi:stop-circle
+    input_select.xiaomi_ringtones:
+      icon: mdi:music-circle
+    input_number.xiaomi_volume:
+      icon: mdi:volume-high
+    input_select.xiaomi_gw_mac:
+      entity_picture: /local/icons/xiaomi.png
+
+input_select:
+  xiaomi_ringtones:
+    name: "Xiaomi Ringtones"
+    icon: mdi:panda
+    initial: "MiMix"
+    options:
+     - Police Car 1
+     - Police Car 2
+     - Accident
+     - Countdown
+     - Ghost
+     - Sniper Rifle
+     - Battle
+     - Air Raid
+     - Bark
+     - Doorbell
+     - Knock at a Door
+     - Amuse
+     - Alarm Clock
+     - MiMix
+     - Enthusiastic
+     - Guitar Classic
+     - Ice World Piano
+     - Leisure Time
+     - ChildHood
+     - Morning Stream Liet
+     - MusicBox
+     - Orange
+     - Thinker
+
+  xiaomi_gw_mac:
+    name: "Xiaomi Gateway"
+    icon: mdi:panda
+    initial: "Gateway 1"
+    options:
+     - Gateway 1
+
+input_number:
+  xiaomi_volume:
+    name: "Xiaomi Volume"
+    min: 0
+    max: 10
+    step: 1
+
+script:
+  xiaomi_play_ringtone:
+    alias: "Xiaomi Play Ringtone"
+    sequence:
+      - service: xiaomi_aqara.play_ringtone
+        data_template:
+          gw_mac: >
+           {% if is_state("input_select.xiaomi_gw_mac", "Gateway 1") %} {{GW_MAC}}
+           {%- endif -%}
+          ringtone_id: >
+           {% if is_state("input_select.xiaomi_ringtones", "Police Car 1") %} 0
+           {% elif is_state("input_select.xiaomi_ringtones", "Police Car 2") %} 1
+           {% elif is_state("input_select.xiaomi_ringtones", "Accident") %} 2
+           {% elif is_state("input_select.xiaomi_ringtones", "Countdown") %} 3
+           {% elif is_state("input_select.xiaomi_ringtones", "Ghost") %} 4
+           {% elif is_state("input_select.xiaomi_ringtones", "Sniper Rifle") %} 5
+           {% elif is_state("input_select.xiaomi_ringtones", "Battle") %} 6
+           {% elif is_state("input_select.xiaomi_ringtones", "Air Raid") %} 7
+           {% elif is_state("input_select.xiaomi_ringtones", "Bark") %} 8
+           {% elif is_state("input_select.xiaomi_ringtones", "DoorBell") %} 10
+           {% elif is_state("input_select.xiaomi_ringtones", "Knock at a Door") %} 11
+           {% elif is_state("input_select.xiaomi_ringtones", "Amuse") %} 12
+           {% elif is_state("input_select.xiaomi_ringtones", "Alarm Clock") %} 13
+           {% elif is_state("input_select.xiaomi_ringtones", "MiMix") %} 20
+           {% elif is_state("input_select.xiaomi_ringtones", "Enthusiastic") %} 21
+           {% elif is_state("input_select.xiaomi_ringtones", "Guitar Classic") %} 22
+           {% elif is_state("input_select.xiaomi_ringtones", "Ice World Piano") %} 23
+           {% elif is_state("input_select.xiaomi_ringtones", "Leisure Time") %} 24
+           {% elif is_state("input_select.xiaomi_ringtones", "ChildHood") %} 25
+           {% elif is_state("input_select.xiaomi_ringtones", "Morning Stream Liet") %} 26
+           {% elif is_state("input_select.xiaomi_ringtones", "MusicBox") %} 27
+           {% elif is_state("input_select.xiaomi_ringtones", "Orange") %} 28
+           {% elif is_state("input_select.xiaomi_ringtones", "Thinker") %} 29
+           {%- endif -%}
+          ringtone_vol: "{{ states('input_number.xiaomi_volume') | int }}"
+
+  xiaomi_stop_ringtone:
+    alias: "Xiaomi Stop Ringtone"
+    sequence:
+      - service: xiaomi_aqara.stop_ringtone
+        data_template:
+          gw_mac: >
+           {% if is_state("input_select.xiaomi_gw_mac", "Gateway 1") %} {{GW_MAC}}
+           {%- endif -%}
+
+group:
+  xiaomi_xiaomi:
+    name: Xiaomi MegaGroup
+    view: no
+    control: hidden
+    entities:
+      - input_select.xiaomi_gw_mac
+      - input_select.xiaomi_ringtones
+      - input_number.xiaomi_volume
+      - script.xiaomi_play_ringtone
+      - script.xiaomi_stop_ringtone
