@@ -1,0 +1,68 @@
+homeassistant:
+  customize:
+    script.google_tts_send:
+      icon: mdi:google-hangouts
+      
+group:
+  google_tts_say:
+    view: false
+    entities:
+      - input_text.google_tts_msg
+      - input_select.google_tts_device
+      - input_select.google_tts_language
+      - script.google_tts_send
+
+script:
+  google_tts_send:
+    sequence:
+      - service: tts.google_say
+        alias: Google TTS Send
+        data_template:
+          entity_id: >
+           {% if is_state("input_select.google_tts_device", "Living Room") %} media_player.living_room
+           {% elif is_state("input_select.google_tts_device", "Master Bedroom") %} media_player.mid7065186
+           {% elif is_state("input_select.google_tts_device", "BabyRoom") %} media_player.kodi
+           {% elif is_state("input_select.google_tts_device", "Kitchen") %} media_player.snapcast_client_796lqclvqcswq4ro
+           {% elif is_state("input_select.google_tts_device", "WC") %} group.everywhere_radiogroup
+           {% endif %}
+          message: '{{ states.input_text.google_tts_msg.state }}'
+          cache: false
+          language: >
+           {% if is_state("input_select.google_tts_language", "EN") %} en
+           {% elif is_state("input_select.google_tts_language", "Kitchen") %} pt
+           {% elif is_state("input_select.google_tts_language", "Bedroom") %} fr
+           {% elif is_state("input_select.google_tts_language", "Bathroom") %} nl
+           {% elif is_state("input_select.google_tts_language", "Everywhere") %} de
+           {% elif is_state("input_select.google_tts_language", "Bathroom") %} es
+           {% elif is_state("input_select.google_tts_language", "Everywhere") %} pl
+           {% endif %}
+      
+input_text:
+  google_tts_msg:
+    name: MSG
+    initial: ' '
+    
+input_select:
+  google_tts_language:
+    name: Google TTS Languages
+    icon: mdi:google-translate
+    initial: EN
+    options:
+      - EN
+      - PT-BR
+      - FR
+      - NL
+      - DE
+      - ES
+      - PL
+      
+  google_tts_device:
+    name: Google TTS Device
+    icon: mdi:speaker-wireless
+    initial: Living Room
+    options:
+      - Living Room
+      - Master Bedroom
+      - BabyRoom
+      - Kitchen
+      - WC
